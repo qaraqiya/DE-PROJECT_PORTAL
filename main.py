@@ -1,4 +1,5 @@
 import boto3
+import os
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -6,9 +7,18 @@ from fastapi.templating import Jinja2Templates
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-REGION = "us-east-1"
-BUCKET = "freedom-de-projects-s3"
-s3 = boto3.client("s3", region_name=REGION)
+ENDPOINT = os.getenv("MINIO_ENDPOINT", "http://minio:9000")
+ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
+SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+BUCKET = os.getenv("S3_BUCKET_NAME", "freedom-de-projects-s3")
+
+s3 = boto3.client(
+    "s3",
+    endpoint_url=ENDPOINT,
+    aws_access_key_id=ACCESS_KEY,
+    aws_secret_access_key=SECRET_KEY,
+    region_name="us-east-1"
+)
 
 def get_all_projects_directly():
     
