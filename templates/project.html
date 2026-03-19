@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Project Files — Freedom x SDU</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet" />
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+            * {
+                font-family: "Inter", sans-serif;
+            }
+            body {
+                background: #080d0f;
+                min-height: 100vh;
+                color: white;
+            }
+            .nav-glass {
+                background: rgba(8, 13, 15, 0.8);
+                backdrop-filter: blur(20px);
+                border-bottom: 1px solid rgba(34, 197, 94, 0.1);
+            }
+            .logo-gradient {
+                background: linear-gradient(90deg, #4ade80 0%, #818cf8 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .glass-card {
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 20px;
+            }
+            .folder-row,
+            .file-row {
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.07);
+                border-radius: 14px;
+                transition: all 0.25s;
+            }
+            .folder-row:hover {
+                border-color: rgba(34, 197, 94, 0.35);
+                background: rgba(34, 197, 94, 0.05);
+            }
+            .btn-download {
+                background: rgba(99, 102, 241, 0.12);
+                border: 1px solid rgba(99, 102, 241, 0.3);
+                color: #a5b4fc;
+                padding: 8px 16px;
+                border-radius: 12px;
+                font-weight: bold;
+            }
+            .btn-download:hover {
+                background: #6366f1;
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="nav-glass sticky top-0 z-50 py-4 px-6">
+            <div
+                class="container mx-auto flex justify-between items-center max-w-4xl">
+                <span class="logo-gradient font-black">FREEDOM × SDU</span>
+            </div>
+        </nav>
+        <div class="container mx-auto mt-10 px-6 max-w-4xl pb-20">
+            <a
+                href="/"
+                class="inline-flex items-center gap-2 text-slate-400 hover:text-green-400 mb-8 transition-colors">
+                <i class="fa-solid fa-chevron-left text-xs"></i> Back to
+                Dashboard
+            </a>
+            <div class="glass-card p-8 mb-8">
+                <h1 class="text-2xl font-black text-white mb-1">
+                    {{ project.split('/')[-2] if project.endswith('/') else
+                    project.split('/')[-1] }}
+                </h1>
+                <p class="text-slate-500 font-mono text-xs">{{ project }}</p>
+            </div>
+
+            {% if folders %}
+            <div class="mb-8">
+                <p class="text-xs font-bold text-slate-500 uppercase mb-4">
+                    Folders
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {% for folder in folders %}
+                    <a
+                        href="/project/{{ folder.path }}"
+                        class="folder-row p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-folder text-blue-400"></i>
+                            <span class="text-sm font-semibold"
+                                >{{ folder.name }}</span
+                            >
+                        </div>
+                        <i
+                            class="fa-solid fa-chevron-right text-xs text-slate-600"></i>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %} {% if files %}
+            <div>
+                <p class="text-xs font-bold text-slate-500 uppercase mb-4">
+                    Files
+                </p>
+                <div class="space-y-3">
+                    {% for file in files %}
+                    <div class="file-row p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-file-code text-slate-400"></i>
+                            <span class="text-sm font-semibold"
+                                >{{ file.name }}</span
+                            >
+                        </div>
+                        <a href="{{ file.url }}" class="btn-download text-xs"
+                            >Download</a
+                        >
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </body>
+</html>
