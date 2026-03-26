@@ -1,4 +1,5 @@
 import boto3
+from dotenv import load_dotenv
 import os
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
@@ -11,6 +12,8 @@ ENDPOINT = os.getenv("MINIO_ENDPOINT", "http://minio:9000")
 ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
 SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 BUCKET = os.getenv("S3_BUCKET_NAME", "freedom-de-projects-s3")
+
+load_dotenv()
 
 s3 = boto3.client(
     "s3",
