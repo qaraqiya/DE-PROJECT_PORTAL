@@ -8,12 +8,13 @@ from fastapi.templating import Jinja2Templates
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
+load_dotenv()
+
 ENDPOINT = os.getenv("MINIO_ENDPOINT", "http://minio:9000")
 ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
 SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 BUCKET = os.getenv("S3_BUCKET_NAME", "freedom-de-projects-s3")
 
-load_dotenv()
 
 s3 = boto3.client(
     "s3",
@@ -67,17 +68,24 @@ def get_contents_at_path(path):
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     projects = get_all_projects_directly()
-    return templates.TemplateResponse("index.html", {"request": request, "projects": projects})
+    return templates.TemplateResponse(
+    request=request, 
+    name="index.html", 
+    context={"projects": projects}
+)
 
 @app.get("/project/{path:path}", response_class=HTMLResponse)
 async def project_page(request: Request, path: str):
     folders, files = get_contents_at_path(path)
-    return templates.TemplateResponse("project.html", {
-        "request": request, 
+    return templates.TemplateResponse(
+    request=request, 
+    name="project.html", 
+    context={
         "folders": folders, 
         "files": files, 
         "project": path
-    })
+    }
+)
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=80)
