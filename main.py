@@ -78,7 +78,7 @@ def get_all_projects_directly():
         "description": "A web platform that finds and translates English Wikipedia articles into Kazakh using machine translation.",
         "tags": ["NLP", "Translation", "Web App"],
         "path": "external/wiki-translator",
-        "external_url": "[wikitranslator.sdutechnopark.kz](https://wikitranslator.sdutechnopark.kz)"
+        "external_url": "https://wikitranslator.sdutechnopark.kz"
     })
 
     # Wrap in same structure your HTML template expects
