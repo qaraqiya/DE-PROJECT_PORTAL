@@ -11,11 +11,10 @@ templates = Jinja2Templates(directory="templates")
 
 load_dotenv()
 
-ENDPOINT = os.getenv("MINIO_ENDPOINT", "http://minio:9000")
+ENDPOINT = os.getenv("MINIO_ENDPOINT", "[minio](http://minio:9000)")
 ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
 SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 BUCKET = os.getenv("S3_BUCKET_NAME", "freedom-de-projects-s3")
-
 
 s3 = boto3.client(
     "s3",
@@ -25,84 +24,103 @@ s3 = boto3.client(
     region_name="us-east-1"
 )
 
+# --- Helper to safely decode corrupted metadata.json files ---
+def decode_json_text(content_bytes):
+    """Try to fix incorrectly encoded metadata files."""
+    try:
+        text = content_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        text = content_bytes.decode("latin-1").encode("utf-8").decode("utf-8")
+    return json.loads(text)
+
+def load_metadata_from_s3(project_prefix):
+    """Try reading metadata.json from inside the S3 project folder."""
+    key = f"{project_prefix.rstrip('/')}/metadata.json"
+    try:
+        meta_obj = s3.get_object(Bucket=BUCKET, Key=key)
+        content = meta_obj["Body"].read()
+        return decode_json_text(content)
+    except s3.exceptions.NoSuchKey:
+        return None
+    except Exception:
+        # Handle malformed JSON or badly encoded files
+        return None
+
+# --- MAIN LOGIC ---
+
 def get_all_projects_directly():
-    
-    response = s3.list_objects_v2(Bucket=BUCKET, Delimiter='/')
+    """Get top-level project folders from S3 and attach metadata."""
+    response = s3.list_objects_v2(Bucket=BUCKET, Delimiter="/")
     projects_list = []
-    for prefix in response.get('CommonPrefixes', []):
-        folder_name = prefix['Prefix'].strip('/')
-        projects_list.append({
-            "name": folder_name,
-            "path": prefix['Prefix'] 
-        })
+
+    for prefix_info in response.get("CommonPrefixes", []):
+        folder_name = prefix_info["Prefix"].strip("/")
+        meta = load_metadata_from_s3(prefix_info["Prefix"])
+        
+        # Fallbacks if no metadata
+        project_data = {
+            "name": meta.get("title", folder_name) if meta else folder_name,
+            "author": meta.get("author", "Unknown") if meta else "Unknown",
+            "description": meta.get(
+                "description",
+                "Explore the data pipeline and source code for this data engineering project."
+            ) if meta else "Explore the data pipeline and source code for this data engineering project.",
+            "tags": meta.get("tags", ["ML", "Dataset"]) if meta else ["ML", "Dataset"],
+            "path": prefix_info["Prefix"]
+        }
+
+        projects_list.append(project_data)
+
+    # Wrap in same structure your HTML template expects
     return {"All Projects": projects_list}
 
-def get_contents_at_path(path):
-  
-    prefix = path if path.endswith('/') else path + '/'
-    
-    response = s3.list_objects_v2(Bucket=BUCKET, Prefix=prefix, Delimiter='/')
-    
-    folders = []
-    for p in response.get('CommonPrefixes', []):
-        folders.append({
-            "name": p['Prefix'].replace(prefix, "").strip('/'),
-            "path": p['Prefix']
-        })
-        
-    files = []
-    if 'Contents' in response:
-        for obj in response['Contents']:
-            key = obj['Key']
-            if key == prefix: continue 
-            
-            url = s3.generate_presigned_url(
-                "get_object", Params={"Bucket": BUCKET, "Key": key}, ExpiresIn=3600
-            )
-            files.append({
-                "name": key.split('/')[-1],
-                "url": url
-            })
-            
-    return folders, files
 
-def safe_load_metadata(path):
-    metadata_path = os.path.join(path, "metadata.json")
-    if not os.path.exists(metadata_path):
-        return None
-    try:
-        with open(metadata_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except UnicodeDecodeError:
-        with open(metadata_path, "rb") as f:
-            raw = f.read()
-        try:
-            text = raw.decode("latin-1").encode("utf-8").decode("utf-8")
-            return json.loads(text)
-        except Exception:
-            return None
+def get_contents_at_path(path):
+    prefix = path if path.endswith("/") else path + "/"
+    response = s3.list_objects_v2(Bucket=BUCKET, Prefix=prefix, Delimiter="/")
+
+    folders = []
+    for p in response.get("CommonPrefixes", []):
+        folders.append({
+            "name": p["Prefix"].replace(prefix, "").strip("/"),
+            "path": p["Prefix"]
+        })
+
+    files = []
+    for obj in response.get("Contents", []):
+        key = obj["Key"]
+        if key == prefix:
+            continue
+        url = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": BUCKET, "Key": key},
+            ExpiresIn=3600
+        )
+        files.append({
+            "name": os.path.basename(key),
+            "url": url
+        })
+
+    return folders, files
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     projects = get_all_projects_directly()
     return templates.TemplateResponse(
-    request=request, 
-    name="index.html", 
-    context={"projects": projects}
-)
+        request=request,
+        name="index.html",
+        context={"projects": projects}
+    )
 
 @app.get("/project/{path:path}", response_class=HTMLResponse)
 async def project_page(request: Request, path: str):
     folders, files = get_contents_at_path(path)
     return templates.TemplateResponse(
-    request=request, 
-    name="project.html", 
-    context={
-        "folders": folders, 
-        "files": files, 
-        "project": path
-    }
-)
+        request=request,
+        name="project.html",
+        context={"folders": folders, "files": files, "project": path}
+    )
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=80)
