@@ -33,6 +33,7 @@ def decode_json_text(content_bytes):
         text = content_bytes.decode("latin-1").encode("utf-8").decode("utf-8")
     return json.loads(text)
 
+
 def load_metadata_from_s3(project_prefix):
     """Try reading metadata.json from inside the S3 project folder."""
     key = f"{project_prefix.rstrip('/')}/metadata.json"
@@ -46,8 +47,8 @@ def load_metadata_from_s3(project_prefix):
         # Handle malformed JSON or badly encoded files
         return None
 
-# --- MAIN LOGIC ---
 
+# --- MAIN LOGIC ---
 def get_all_projects_directly():
     """Get top-level project folders from S3 and attach metadata."""
     response = s3.list_objects_v2(Bucket=BUCKET, Delimiter="/")
@@ -57,16 +58,7 @@ def get_all_projects_directly():
         folder_name = prefix_info["Prefix"].strip("/")
         meta = load_metadata_from_s3(prefix_info["Prefix"])
 
-        projects_list.append({
-        "name": "Wiki Translator",
-        "author": "Marzhan Sherekhan", 
-        "description": "A web platform that finds and translates English Wikipedia articles into Kazakh using machine translation.",
-        "tags": ["NLP", "Translation", "Web App"],
-        
-        "path": "external/wiki-translator",
-        "external_url": "[wikitranslator.sdutechnopark.kz](https://wikitranslator.sdutechnopark.kz)" L
-        })
-        # Fallbacks if no metadata
+        # Normal project entry
         project_data = {
             "name": meta.get("title", folder_name) if meta else folder_name,
             "author": meta.get("author", "Unknown") if meta else "Unknown",
@@ -77,9 +69,17 @@ def get_all_projects_directly():
             "tags": meta.get("tags", ["ML", "Dataset"]) if meta else ["ML", "Dataset"],
             "path": prefix_info["Prefix"]
         }
-
         projects_list.append(project_data)
-        
+
+    # --- Manually add the external Wiki Translator project ---
+    projects_list.append({
+        "name": "Wiki Translator",
+        "author": "Marzhan Sherekhan",
+        "description": "A web platform that finds and translates English Wikipedia articles into Kazakh using machine translation.",
+        "tags": ["NLP", "Translation", "Web App"],
+        "path": "external/wiki-translator",
+        "external_url": "[wikitranslator.sdutechnopark.kz](https://wikitranslator.sdutechnopark.kz)"
+    })
 
     # Wrap in same structure your HTML template expects
     return {"All Projects": projects_list}
@@ -113,6 +113,7 @@ def get_contents_at_path(path):
 
     return folders, files
 
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     projects = get_all_projects_directly()
@@ -122,6 +123,7 @@ async def home(request: Request):
         context={"projects": projects}
     )
 
+
 @app.get("/project/{path:path}", response_class=HTMLResponse)
 async def project_page(request: Request, path: str):
     folders, files = get_contents_at_path(path)
@@ -130,6 +132,7 @@ async def project_page(request: Request, path: str):
         name="project.html",
         context={"folders": folders, "files": files, "project": path}
     )
+
 
 if __name__ == "__main__":
     import uvicorn
