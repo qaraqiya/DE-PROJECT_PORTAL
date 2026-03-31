@@ -281,10 +281,17 @@
                         <div
                             class="h-px bg-gradient-to-r from-green-500/20 via-indigo-500/10 to-transparent mb-5"></div>
 
+                        {% if project.external_url %}
+                        <a href="{{ project.external_url }}" target="_blank" class="btn-view">
+                            Visit Site
+                            <i class="fa-solid fa-arrow-up-right-from-square ml-2 text-xs"></i>
+                        </a>
+                        {% else %}
                         <a href="/project/{{ project.path }}" class="btn-view">
                             View Project
                             <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
                         </a>
+                        {% endif %}
                     </div>
                     {% endfor %}
                 </div>
