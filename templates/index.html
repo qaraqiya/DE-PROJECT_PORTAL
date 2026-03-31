@@ -252,30 +252,31 @@
                         <div class="flex justify-between items-start mb-5">
                             <div
                                 class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/20 to-indigo-500/20 border border-white/10 flex items-center justify-center">
-                                <i
-                                    class="fa-solid fa-folder-open text-green-400 text-lg"></i>
+                                <i class="fa-solid fa-folder-open text-green-400 text-lg"></i>
                             </div>
-                            <div class="flex gap-2">
-                                <span
-                                    class="badge-ml text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full"
-                                    >ML</span
-                                >
-                                <span
-                                    class="badge-dataset text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full"
-                                    >Dataset</span
-                                >
+
+                            <div class="flex flex-wrap gap-1.5">
+                                {% for tag in project.tags %}
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border"
+                                      style="border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.1); color: #a5b4fc;">
+                                    {{ tag }}
+                                </span>
+                                {% endfor %}
                             </div>
                         </div>
 
-                        <h3
-                            class="text-base font-bold text-white mb-2 truncate">
+                        <h3 class="text-base font-bold text-white mb-1 truncate">
                             {{ project.name }}
                         </h3>
-                        <p
-                            class="text-slate-500 text-xs leading-relaxed mb-6 flex-1">
-                            Explore the data pipeline and source code for this
-                            data engineering project.
+
+                        <p class="text-slate-600 text-[11px] mb-2">
+                            by <span class="text-green-400">{{ project.author }}</span>
                         </p>
+
+                        <p class="text-slate-500 text-xs leading-relaxed mb-6 flex-1">
+                            {{ project.description }}
+                        </p>
+
 
                         <div
                             class="h-px bg-gradient-to-r from-green-500/20 via-indigo-500/10 to-transparent mb-5"></div>
