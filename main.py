@@ -1,4 +1,5 @@
 import boto3
+import json
 from dotenv import load_dotenv
 import os
 from fastapi import FastAPI, Request
@@ -64,6 +65,22 @@ def get_contents_at_path(path):
             })
             
     return folders, files
+
+def safe_load_metadata(path):
+    metadata_path = os.path.join(path, "metadata.json")
+    if not os.path.exists(metadata_path):
+        return None
+    try:
+        with open(metadata_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except UnicodeDecodeError:
+        with open(metadata_path, "rb") as f:
+            raw = f.read()
+        try:
+            text = raw.decode("latin-1").encode("utf-8").decode("utf-8")
+            return json.loads(text)
+        except Exception:
+            return None
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
