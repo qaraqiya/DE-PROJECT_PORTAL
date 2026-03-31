@@ -56,7 +56,16 @@ def get_all_projects_directly():
     for prefix_info in response.get("CommonPrefixes", []):
         folder_name = prefix_info["Prefix"].strip("/")
         meta = load_metadata_from_s3(prefix_info["Prefix"])
+
+        projects_list.append({
+        "name": "Wiki Translator",
+        "author": "Marzhan Sherekhan", 
+        "description": "A web platform that finds and translates English Wikipedia articles into Kazakh using machine translation.",
+        "tags": ["NLP", "Translation", "Web App"],
         
+        "path": "external/wiki-translator",
+        "external_url": "[wikitranslator.sdutechnopark.kz](https://wikitranslator.sdutechnopark.kz)" L
+        })
         # Fallbacks if no metadata
         project_data = {
             "name": meta.get("title", folder_name) if meta else folder_name,
@@ -70,6 +79,7 @@ def get_all_projects_directly():
         }
 
         projects_list.append(project_data)
+        
 
     # Wrap in same structure your HTML template expects
     return {"All Projects": projects_list}
