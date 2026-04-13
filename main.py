@@ -134,14 +134,6 @@ async def home(request: Request):
     )
 
 
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    projects = get_all_projects_directly()
-    return templates.TemplateResponse(
-        request=request,
-        name="index.html",
-        context={"projects": projects}
-    )
 
 
 @app.get("/project/{path:path}", response_class=HTMLResponse)
