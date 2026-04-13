@@ -193,6 +193,28 @@
             </div>
         </nav>
 
+        <!-- TAG FILTER -->
+        <div class="max-w-4xl mx-auto mt-12 mb-10">
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Filter by Tag</p>
+            <div id="tag-filters" class="flex flex-wrap gap-2">
+                {% for tag in all_tags %}
+                <button 
+                    class="tag-btn text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200"
+                    data-tag="{{ tag }}"
+                    style="border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.08); color: #a5b4fc;">
+                    {{ tag }}
+                </button>
+                {% endfor %}
+                <button 
+                    id="clear-filters"
+                    class="text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200 hidden"
+                    style="border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.1); color: #f87171;">
+                    <i class="fa-solid fa-xmark mr-1"></i> Clear
+                </button>
+            </div>
+        </div>
+
+
         <!-- HERO -->
         <div
             class="relative z-10 container mx-auto px-6 pt-16 pb-12 text-center">
@@ -224,6 +246,47 @@
                 </div>
             </div>
         </div>
+
+
+        <!-- RESOURCES CARD — place before the {% for student... %} loop -->
+        <div class="container mx-auto px-6 mb-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a href="/resources" class="resource-card group p-6 flex flex-col relative overflow-hidden" style="
+                    background: linear-gradient(135deg, rgba(250, 204, 21, 0.15), rgba(251, 146, 60, 0.12));
+                    border: 1px solid rgba(250, 204, 21, 0.4);
+                    border-radius: 20px;
+                    transition: all 0.3s ease;
+                ">
+                    <div class="flex justify-between items-start mb-5">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+                             style="background: linear-gradient(135deg, rgba(250, 204, 21, 0.3), rgba(251, 146, 60, 0.25)); border: 1px solid rgba(250, 204, 21, 0.4);">
+                            <i class="fa-solid fa-database text-yellow-400 text-lg"></i>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full"
+                              style="background: rgba(250, 204, 21, 0.2); color: #fbbf24; border: 1px solid rgba(250, 204, 21, 0.4);">
+                            Hub
+                        </span>
+                    </div>
+        
+                    <h3 class="text-base font-bold text-yellow-300 mb-1">
+                        Resources & Datasets
+                    </h3>
+        
+                    <p class="text-yellow-200/60 text-xs leading-relaxed mb-6 flex-1">
+                        Browse all datasets, APIs, and external references used across our projects.
+                    </p>
+        
+                    <div class="h-px mb-5" style="background: linear-gradient(to right, rgba(250, 204, 21, 0.3), transparent);"></div>
+        
+                    <div class="btn-view group-hover:bg-gradient-to-r group-hover:from-yellow-500 group-hover:to-orange-500 group-hover:text-white"
+                         style="background: rgba(250, 204, 21, 0.15); border-color: rgba(250, 204, 21, 0.4); color: #fbbf24;">
+                        Explore Resources
+                        <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+
 
         <div class="container mx-auto px-6">
             {% for student, student_projects in projects.items() %}
