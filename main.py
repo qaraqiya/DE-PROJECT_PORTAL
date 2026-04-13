@@ -113,6 +113,26 @@ def get_contents_at_path(path):
 
     return folders, files
 
+def get_all_tags(projects_dict):
+    """Extract all unique tags from all projects."""
+    all_tags = set()
+    for student, student_projects in projects_dict.items():
+        for project in student_projects:
+            for tag in project.get("tags", []):
+                all_tags.add(tag)
+    return sorted(all_tags)
+
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    projects = get_all_projects_directly()
+    all_tags = get_all_tags(projects)
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={"projects": projects, "all_tags": all_tags}
+    )
+
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
