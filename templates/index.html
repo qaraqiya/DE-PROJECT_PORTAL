@@ -193,26 +193,7 @@
             </div>
         </nav>
 
-        <!-- TAG FILTER -->
-        <div class="max-w-4xl mx-auto mt-12 mb-10">
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Filter by Tag</p>
-            <div id="tag-filters" class="flex flex-wrap gap-2">
-                {% for tag in all_tags %}
-                <button 
-                    class="tag-btn text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200"
-                    data-tag="{{ tag }}"
-                    style="border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.08); color: #a5b4fc;">
-                    {{ tag }}
-                </button>
-                {% endfor %}
-                <button 
-                    id="clear-filters"
-                    class="text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200 hidden"
-                    style="border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.1); color: #f87171;">
-                    <i class="fa-solid fa-xmark mr-1"></i> Clear
-                </button>
-            </div>
-        </div>
+      
 
 
         <!-- HERO -->
@@ -288,6 +269,27 @@
                     </div>
                 </a>
             </div>
+
+            <!-- TAG FILTER -->
+        <div class="max-w-4xl mx-auto mt-12 mb-10">
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Filter by Tag</p>
+            <div id="tag-filters" class="flex flex-wrap gap-2">
+                {% for tag in all_tags %}
+                <button 
+                    class="tag-btn text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200"
+                    data-tag="{{ tag }}"
+                    style="border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.08); color: #a5b4fc;">
+                    {{ tag }}
+                </button>
+                {% endfor %}
+                <button 
+                    id="clear-filters"
+                    class="text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200 hidden"
+                    style="border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.1); color: #f87171;">
+                    <i class="fa-solid fa-xmark mr-1"></i> Clear
+                </button>
+            </div>
+        </div>
 
             {% for student, student_projects in projects.items() %}
             <section class="mb-16">
