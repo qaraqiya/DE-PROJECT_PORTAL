@@ -145,6 +145,32 @@ async def project_page(request: Request, path: str):
         context={"folders": folders, "files": files, "project": path}
     )
 
+@app.get("/resources", response_class=HTMLResponse)
+async def resources_page(request: Request):
+    resources_list = [
+        {
+            "name": "Wikipedia Dumps",
+            "description": "Raw data used for training and translation tasks in NLP projects.",
+            "url": "https://dumps.wikimedia.org/",
+            "category": "Dataset"
+        },
+        {
+            "name": "Kaggle Finance Data",
+            "description": "Financial datasets used for banking assistants and stock analysis.",
+            "url": "https://www.kaggle.com/datasets",
+            "category": "Data Source"
+        },
+        {
+            "name": "Hugging Face Hub",
+            "description": "Pre-trained models and specialized NLP datasets.",
+            "url": "https://huggingface.co/datasets",
+            "category": "ML Hub"
+        }
+    ]
+    return templates.TemplateResponse(
+        "resources.html", 
+        {"request": request, "resources": resources_list}
+    )
 
 if __name__ == "__main__":
     import uvicorn
