@@ -248,9 +248,12 @@
         </div>
 
 
-        <!-- RESOURCES CARD — place before the {% for student... %} loop -->
-        <div class="container mx-auto px-6 mb-12">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+
+
+        <div class="container mx-auto px-6">
+                        <!-- RESOURCES CARD -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                 <a href="/resources" class="resource-card group p-6 flex flex-col relative overflow-hidden" style="
                     background: linear-gradient(135deg, rgba(250, 204, 21, 0.15), rgba(251, 146, 60, 0.12));
                     border: 1px solid rgba(250, 204, 21, 0.4);
@@ -267,28 +270,25 @@
                             Hub
                         </span>
                     </div>
-        
+
                     <h3 class="text-base font-bold text-yellow-300 mb-1">
                         Resources & Datasets
                     </h3>
-        
+
                     <p class="text-yellow-200/60 text-xs leading-relaxed mb-6 flex-1">
                         Browse all datasets, APIs, and external references used across our projects.
                     </p>
-        
+
                     <div class="h-px mb-5" style="background: linear-gradient(to right, rgba(250, 204, 21, 0.3), transparent);"></div>
-        
-                    <div class="btn-view group-hover:bg-gradient-to-r group-hover:from-yellow-500 group-hover:to-orange-500 group-hover:text-white"
-                         style="background: rgba(250, 204, 21, 0.15); border-color: rgba(250, 204, 21, 0.4); color: #fbbf24;">
+
+                    <div class="flex items-center justify-center p-3 rounded-xl font-bold transition-all duration-200"
+                         style="background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.4); color: #fbbf24;">
                         Explore Resources
                         <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
                     </div>
                 </a>
             </div>
-        </div>
 
-
-        <div class="container mx-auto px-6">
             {% for student, student_projects in projects.items() %}
             <section class="mb-16">
                 <div class="flex items-center gap-4 mb-8">
@@ -321,6 +321,7 @@
                             <div class="flex flex-wrap gap-1.5">
                                 {% for tag in project.tags %}
                                 <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border"
+                                      data-tag="{{ tag }}"
                                       style="border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.1); color: #a5b4fc;">
                                     {{ tag }}
                                 </span>
@@ -373,5 +374,65 @@
                 </p>
             </div>
         </footer>
+
+
+            <script>
+        const tagButtons = document.querySelectorAll('.tag-btn');
+        const clearBtn = document.getElementById('clear-filters');
+        const projectCards = document.querySelectorAll('.project-card');
+        const studentSections = document.querySelectorAll('section');
+        
+        let activeTags = new Set();
+
+        function updateFilters() {
+            tagButtons.forEach(btn => {
+                const tag = btn.dataset.tag;
+                if (activeTags.has(tag)) {
+                    btn.style.background = 'rgba(99, 102, 241, 0.4)';
+                    btn.style.borderColor = 'rgba(99, 102, 241, 0.8)';
+                    btn.style.color = '#fff';
+                } else {
+                    btn.style.background = 'rgba(99, 102, 241, 0.08)';
+                    btn.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+                    btn.style.color = '#a5b4fc';
+                }
+            });
+
+            clearBtn.classList.toggle('hidden', activeTags.size === 0);
+
+            projectCards.forEach(card => {
+                const cardTags = Array.from(card.querySelectorAll('[data-tag]')).map(el => el.dataset.tag);
+                if (activeTags.size === 0) {
+                    card.style.display = '';
+                    return;
+                }
+                const matches = [...activeTags].every(tag => cardTags.includes(tag));
+                card.style.display = matches ? '' : 'none';
+            });
+
+            studentSections.forEach(section => {
+                const visibleCards = section.querySelectorAll('.project-card:not([style*="display: none"])');
+                section.style.display = visibleCards.length === 0 ? 'none' : '';
+            });
+        }
+
+        tagButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tag = btn.dataset.tag;
+                if (activeTags.has(tag)) {
+                    activeTags.delete(tag);
+                } else {
+                    activeTags.add(tag);
+                }
+                updateFilters();
+            });
+        });
+
+        clearBtn.addEventListener('click', () => {
+            activeTags.clear();
+            updateFilters();
+        });
+    </script>
+
     </body>
 </html>
