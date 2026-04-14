@@ -271,26 +271,32 @@
             </div>
 
             <!-- TAG FILTER -->
-        <div class="max-w-4xl mx-auto mt-12 mb-10">
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Filter by Tag</p>
-            <div id="tag-filters" class="flex flex-wrap gap-2">
-                {% for tag in all_tags %}
-                <button 
-                    class="tag-btn text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200"
-                    data-tag="{{ tag }}"
-                    style="border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.08); color: #a5b4fc;">
-                    {{ tag }}
-                </button>
-                {% endfor %}
-                <button 
-                    id="clear-filters"
-                    class="text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200 hidden"
-                    style="border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.1); color: #f87171;">
-                    <i class="fa-solid fa-xmark mr-1"></i> Clear
-                </button>
-            </div>
-        </div>
+       <div class="container mx-auto px-6 mb-8">
+    <div class="flex items-center gap-3 mb-6">
+        <h2 class="text-xl font-bold text-white">All Projects</h2>
+        <button id="toggle-filter" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-semibold text-slate-400 hover:bg-white/10 hover:border-green-500/30 hover:text-green-400 transition-all cursor-pointer">
+            <i class="fa-solid fa-filter"></i>
+            <span>Filter</span>
+        </button>
+    </div>
 
+    <div id="filter-panel" class="hidden bg-white/[0.02] border border-white/5 rounded-2xl p-6 transition-all duration-300">
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Select Tags to Filter:</p>
+        <div id="tag-filters" class="flex flex-wrap gap-2">
+            {% for tag in all_tags %}
+            <button class="tag-btn text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200 cursor-pointer"
+                data-tag="{{ tag }}"
+                style="border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.08); color: #a5b4fc;">
+                {{ tag }}
+            </button>
+            {% endfor %}
+            <button id="clear-filters" class="text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200 cursor-pointer hidden"
+                style="border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.1); color: #f87171;">
+                <i class="fa-solid fa-xmark mr-1"></i> Clear
+            </button>
+        </div>
+    </div>
+</div>
             {% for student, student_projects in projects.items() %}
             <section class="mb-16">
                 <div class="flex items-center gap-4 mb-8">
@@ -379,6 +385,25 @@
 
 
             <script>
+
+
+                       
+        const toggleBtn = document.getElementById('toggle-filter');
+        const filterPanel = document.getElementById('filter-panel');
+        
+        
+        toggleBtn.addEventListener('click', () => {
+            filterPanel.classList.toggle('hidden');
+            
+          
+            if (!filterPanel.classList.contains('hidden')) {
+                toggleBtn.style.borderColor = 'rgba(34, 197, 94, 0.5)';
+                toggleBtn.style.color = '#4ade80';
+            } else {
+                toggleBtn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                toggleBtn.style.color = '#94a3b8';
+            }
+        });
         const tagButtons = document.querySelectorAll('.tag-btn');
         const clearBtn = document.getElementById('clear-filters');
         const projectCards = document.querySelectorAll('.project-card');
