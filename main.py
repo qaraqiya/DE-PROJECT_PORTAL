@@ -125,12 +125,20 @@ def get_all_tags(projects_dict):
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    projects = get_all_projects_directly()
-    all_tags = get_all_tags(projects)
+    projects_data = get_all_projects_directly()
+    all_tags = get_all_tags(projects_data)
+    
+    
+    total_count = sum(len(p_list) for p_list in projects_data.values())
+    
     return templates.TemplateResponse(
         request=request,
         name="index.html",
-        context={"projects": projects, "all_tags": all_tags}
+        context={
+            "projects": projects_data, 
+            "all_tags": all_tags, 
+            "total_count": total_count  
+        }
     )
 
 
