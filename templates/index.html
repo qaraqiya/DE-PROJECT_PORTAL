@@ -271,53 +271,45 @@
             </div>
 
                   <div class="container mx-auto px-6 mb-12">
-                <div class="flex items-center gap-4 py-6 border-b border-white/5">
-                    <button id="toggle-filter" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-slate-400 hover:bg-white/10 hover:border-green-500/30 hover:text-green-400 transition-all cursor-pointer">
-                        <i class="fa-solid fa-filter"></i>
-                        <span>Filter</span>
-                    </button>
-            
-                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/5 border border-green-500/10">
-                        <span class="text-[10px] font-mono text-green-400/60 uppercase tracking-widest whitespace-nowrap">Total projects:</span>
-                        <span class="text-sm font-black text-green-400">{{ total_count }}</span>
-                    </div>
-                </div>
-            
-                <div id="filter-panel" class="hidden mt-6 bg-white/[0.02] border border-white/5 rounded-2xl p-6 transition-all duration-300">
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Select Categories:</p>
-                    <div id="tag-filters" class="flex flex-wrap gap-2">
-                        {% for tag in all_tags %}
-                        <button class="tag-btn text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200 cursor-pointer"
-                            data-tag="{{ tag }}"
-                            style="border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.08); color: #a5b4fc;">
-                            {{ tag }}
-                        </button>
-                        {% endfor %}
-                        <button id="clear-filters" class="text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200 cursor-pointer hidden"
-                            style="border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.1); color: #f87171;">
-                            <i class="fa-solid fa-xmark mr-1"></i> Clear
-                        </button>
-                    </div>
-                </div>
-            </div>
-            {% for student, student_projects in projects.items() %}
+    <div class="flex items-center gap-4 py-6 border-b border-white/5">
+        <button id="toggle-filter" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-slate-400 hover:bg-white/10 hover:border-green-500/30 hover:text-green-400 transition-all cursor-pointer">
+            <i class="fa-solid fa-filter"></i>
+            <span>Filter</span>
+        </button>
+
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/5 border border-green-500/10">
+            <span class="text-[10px] font-mono text-green-400/60 uppercase tracking-widest whitespace-nowrap">Total projects:</span>
+            <span class="text-sm font-black text-green-400">{{ total_count }}</span>
+        </div>
+    </div>
+
+    <div id="filter-panel" class="hidden mt-6 bg-white/[0.02] border border-white/5 rounded-2xl p-6 transition-all duration-300">
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Select Categories:</p>
+        <div id="tag-filters" class="flex flex-wrap gap-2">
+            {% for tag in all_tags %}
+            <button class="tag-btn text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200 cursor-pointer"
+                data-tag="{{ tag }}"
+                style="border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.08); color: #a5b4fc;">
+                {{ tag }}
+            </button>
+            {% endfor %}
+            <button id="clear-filters" class="text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200 cursor-pointer hidden"
+                style="border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.1); color: #f87171;">
+                <i class="fa-solid fa-xmark mr-1"></i> Clear
+            </button>
+        </div>
+    </div>
+</div>
             <section class="mb-16">
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="student-pill">
-                        <div class="student-avatar">
-                            {{ student[0] | upper }}
-                        </div>
-                        <span class="text-sm font-semibold text-green-300"
-                            >{{ student }}</span
-                        >
-                    </div>
-                    <div
-                        class="flex-1 h-px bg-gradient-to-r from-green-500/20 to-transparent"></div>
-                    <span class="text-xs text-slate-600 font-mono">
-                        {{ student_projects | length }} project{{ 's' if
-                        student_projects | length != 1 else '' }}
-                    </span>
-                </div>
+    <div class="flex items-center gap-4 mb-8">
+        <div class="student-pill">
+            <div class="student-avatar">
+                {{ student[0] | upper }}
+            </div>
+            <span class="text-sm font-semibold text-green-300">{{ student }}</span>
+        </div>
+        <div class="flex-1 h-px bg-gradient-to-r from-green-500/20 to-transparent"></div>
+    </div>
 
                 <div
                     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
