@@ -2,6 +2,9 @@ import boto3
 import json
 from dotenv import load_dotenv
 import os
+import io
+import zipfile
+from fastapi.responses import StreamingResponse
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -154,31 +157,53 @@ async def project_page(request: Request, path: str):
 
 @app.get("/resources", response_class=HTMLResponse)
 async def resources_page(request: Request):
-    resources_list = [
-        {
-            "name": "Wikipedia Dumps",
-            "description": "Raw data used for training and translation tasks in NLP projects.",
-            "url": "https://dumps.wikimedia.org/",
-            "category": "Dataset"
-        },
-        {
-            "name": "Kaggle Finance Data",
-            "description": "Financial datasets used for banking assistants and stock analysis.",
-            "url": "https://www.kaggle.com/datasets",
-            "category": "Data Source"
-        },
-        {
-            "name": "Hugging Face Hub",
-            "description": "Pre-trained models and specialized NLP datasets.",
-            "url": "https://huggingface.co/datasets",
-            "category": "ML Hub"
-        }
-    ]
+    # Указываем точный путь к твоей новой папке
+    resource_path = "freedom-de-resources/" 
+    
+    folders, files = get_contents_at_path(resource_path)
+    
     return templates.TemplateResponse(
-        "resources.html", 
-        {"request": request, "resources": resources_list}
+        request=request,
+        name="project.html",
+        context={
+            "folders": folders, 
+            "files": files, 
+            "project": "Freedom DE Resources"
+        }
     )
 
+@app.get("/download-zip/{path:path}")
+async def download_project_zip(path: str):
+    prefix = path if path.endswith("/") else path + "/"
+    
+    
+    response = s3.list_objects_v2(Bucket=BUCKET, Prefix=prefix)
+    
+    
+    zip_buffer = io.BytesIO()
+    
+    with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+        for obj in response.get("Contents", []):
+            file_key = obj["Key"]
+            if file_key == prefix: continue 
+            
+            
+            file_obj = s3.get_object(Bucket=BUCKET, Key=file_key)
+            file_content = file_obj["Body"].read()
+            
+            
+            arcname = file_key.replace(prefix, "")
+            zip_file.writestr(arcname, file_content)
+            
+    zip_buffer.seek(0)
+    
+    filename = f"{path.strip('/').split('/')[-1]}.zip"
+    return StreamingResponse(
+        zip_buffer, 
+        media_type="application/x-zip-compressed",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+    
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=80)
