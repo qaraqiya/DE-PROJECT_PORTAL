@@ -79,6 +79,10 @@
                     project.split('/')[-1] }}
                 </h1>
                 <p class="text-slate-500 font-mono text-xs">{{ project }}</p>
+                <a href="/download-zip/{{ project }}" class="btn-view bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500 hover:text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all">
+                    <i class="fa-solid fa-file-zipper"></i>
+                    Download All (.zip)
+                </a>
             </div>
 
             {% if folders %}
